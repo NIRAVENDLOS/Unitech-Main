@@ -1,0 +1,48 @@
+<div class="row">
+    <div class="col-md-12">
+      <nb-card>
+        <nb-card-header>Vender form</nb-card-header>
+        <nb-card-body>
+          <form [formGroup]="venderForm" (ngSubmit)="onVenderSubmit()">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                    <label for="vendorName" class="label">Vender Name</label>
+                    <input type="text" nbInput fullWidth id="vendorName" placeholder="Enter Vender Name" formControlName="vendorName">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                    <label for="vendorcode" class="label">Vender Code</label>
+                    <input type="text" nbInput fullWidth id="vendorcode" placeholder="Enter Vender code" formControlName="vendorcode">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                    <label for="vendorAddress" class="label">Vender Address</label>
+                    <input type="text" nbInput fullWidth id="vendorAddress" placeholder="Enter Vender Address" formControlName="vendorAddress">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                    <label for="vendorpan" class="label">Vender Pan</label>
+                    <input type="text" nbInput fullWidth id="vendorpan" placeholder="Enter Vender Pan No." formControlName="panno">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                    <label for="vendorGst" class="label">Vender GST</label>
+                    <input type="text" nbInput fullWidth id="vendorGst" placeholder="Enter Vender GST No." formControlName="gstno">
+                    </div>
+                </div>
+            </div>
+          <button type="submit" nbButton status="danger">Submit</button>
+          </form>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </div>
