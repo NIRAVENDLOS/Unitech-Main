@@ -13,6 +13,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProductCategoryComponent } from './product-category/product-category.component';
 import { IssueComponent } from './issue/issue.component';
 import { IndentComponent } from './indent/indent.component';
+import { ReportComponent } from './report/report.component';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { IndentComponent } from './indent/indent.component';
     ProductItemComponent,
     ProductCategoryComponent,
     IssueComponent,
-    IndentComponent
+    IndentComponent,
+    ReportComponent
   ],
   imports: [
     CommonModule,

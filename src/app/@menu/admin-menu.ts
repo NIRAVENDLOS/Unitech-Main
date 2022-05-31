@@ -215,6 +215,10 @@ export const ADMIN_MENU_ITEMS: NbMenuItem[] = [
         title: 'Indent',
         link: '/pages/store/indent',
       },
+      {
+        title: 'Report',
+        link: '/pages/store/report',
+      },
     ],
   },
 ]

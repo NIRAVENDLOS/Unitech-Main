@@ -5,6 +5,7 @@ import { IssueComponent } from './issue/issue.component';
 import { ProductCategoryComponent } from './product-category/product-category.component';
 import { ProductItemComponent } from './product-item/product-item.component';
 import { ProductUnitComponent } from './product-unit/product-unit.component';
+import { ReportComponent } from './report/report.component';
 
 const routes: Routes = [
   {
@@ -31,6 +32,10 @@ const routes: Routes = [
   {
     path: 'indent',
     component: IndentComponent
+  },
+  {
+    path: 'report',
+    component: ReportComponent
   },
 ];
 

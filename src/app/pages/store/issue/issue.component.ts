@@ -1,20 +1,20 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NbDialogService } from '@nebular/theme';
-import { concat } from 'rxjs';
-import { LoginService } from '../../../@service/auth/login.service';
-import { IndentService } from '../../../@service/store/indent.service';
-import { IssueService } from '../../../@service/store/issue.service';
-import { ItemService } from '../../../@service/store/item.service';
-import { ResponceService } from '../../../@service/store/responce.service';
+import { Component, OnInit, TemplateRef } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { NbDialogService } from "@nebular/theme";
+import { concat } from "rxjs";
+import { LoginService } from "../../../@service/auth/login.service";
+import { MachineService } from "../../../@service/machine/machine.service";
+import { IndentService } from "../../../@service/store/indent.service";
+import { IssueService } from "../../../@service/store/issue.service";
+import { ItemService } from "../../../@service/store/item.service";
+import { ResponceService } from "../../../@service/store/responce.service";
 
 @Component({
-  selector: 'ngx-issue',
-  templateUrl: './issue.component.html',
-  styleUrls: ['./issue.component.scss']
+  selector: "ngx-issue",
+  templateUrl: "./issue.component.html",
+  styleUrls: ["./issue.component.scss"],
 })
 export class IssueComponent implements OnInit {
-
   admin: boolean = false;
   maintanance: boolean = false;
   store: boolean = false;
@@ -25,6 +25,7 @@ export class IssueComponent implements OnInit {
   ResponceForm: FormGroup;
   ResponceFormIndent: FormGroup;
   IndentForm: FormGroup;
+  usageItemForm: FormGroup;
 
   NbDialogRef: any;
   NbDialogRef1: any;
@@ -41,6 +42,25 @@ export class IssueComponent implements OnInit {
   CANCELIssueSource: any = [];
   OPENIssueSource: any = [];
 
+  tax: any;
+  total: any;
+
+  deptName: any = [
+    "bloowroom",
+    "carding",
+    "drawframe",
+    "finisher",
+    "speedframe",
+    "comber",
+    "lapformer",
+    "ringframe",
+    "winding",
+    "packing",
+    "utility",
+    "wasteroom",
+  ];
+  MachineName: any = [];
+
   PENDINGsettings = {
     actions: {
       delete: false,
@@ -48,260 +68,261 @@ export class IssueComponent implements OnInit {
       edit: false,
       custom: [
         {
-          name: 'Button',
-          type: 'html',
+          name: "Button",
+          type: "html",
           title: '<i class="nb-list" title="View"></i>',
-        }],
-      position: 'right'
+        },
+      ],
+      position: "right",
     },
     columns: {
       issueId: {
-        title: 'ID',
-        type: 'number',
+        title: "ID",
+        type: "number",
       },
       description: {
-        title: 'Description',
-        type: 'string',
+        title: "Description",
+        type: "string",
       },
       storeItemModel: {
-        title: 'Item Name',
-        type: 'string',
+        title: "Item Name",
+        type: "string",
         valuePrepareFunction: (cell, row) => {
-          return row.storeItemModel.itemName
+          return row.storeItemModel.itemName;
         },
       },
       quantity: {
-        title: 'Quantity',
-        type: 'number',
+        title: "Quantity",
+        type: "number",
       },
       requiredDays: {
-        title: 'Required Days',
-        type: 'number',
+        title: "Required Days",
+        type: "number",
       },
       issueDate: {
-        title: 'Issue Date',
-        type: 'date',
+        title: "Issue Date",
+        type: "date",
         valuePrepareFunction: (cell, row) => {
-          return new Date(cell).toLocaleString('en-IN');
+          return new Date(cell).toLocaleString("en-IN");
         },
       },
       status: {
-        title: 'Status',
-        type: 'html',
+        title: "Status",
+        type: "html",
         valuePrepareFunction: (cell, row) => {
-          return '<span class="cell_right1">' + cell + '</span>';
+          return '<span class="cell_right1">' + cell + "</span>";
         },
-      }
+      },
     },
   };
   ACCEPTsettings = {
     actions: false,
     columns: {
       issueId: {
-        title: 'ID',
-        type: 'number',
+        title: "ID",
+        type: "number",
       },
       description: {
-        title: 'Description',
-        type: 'string',
+        title: "Description",
+        type: "string",
       },
       storeItemModel: {
-        title: 'Item Name',
-        type: 'string',
+        title: "Item Name",
+        type: "string",
         valuePrepareFunction: (cell, row) => {
-          return row.storeItemModel.itemName
+          return row.storeItemModel.itemName;
         },
       },
       quantity: {
-        title: 'Quantity',
-        type: 'number',
+        title: "Quantity",
+        type: "number",
       },
       requiredDays: {
-        title: 'Required Days',
-        type: 'number',
+        title: "Required Days",
+        type: "number",
       },
       issueDate: {
-        title: 'Issue Date',
-        type: 'date',
+        title: "Issue Date",
+        type: "date",
         valuePrepareFunction: (cell, row) => {
-          return new Date(cell).toLocaleString('en-IN');
+          return new Date(cell).toLocaleString("en-IN");
         },
       },
       status: {
-        title: 'Status',
-        type: 'html',
+        title: "Status",
+        type: "html",
         valuePrepareFunction: (cell, row) => {
-          return '<span class="cell_right1">' + cell + '</span>';
+          return '<span class="cell_right1">' + cell + "</span>";
         },
-      }
+      },
     },
   };
   DONEsettings = {
     actions: false,
     columns: {
       issueId: {
-        title: 'ID',
-        type: 'number',
+        title: "ID",
+        type: "number",
       },
       description: {
-        title: 'Description',
-        type: 'string',
+        title: "Description",
+        type: "string",
       },
       storeItemModel: {
-        title: 'Item Name',
-        type: 'string',
+        title: "Item Name",
+        type: "string",
         valuePrepareFunction: (cell, row) => {
-          return row.storeItemModel.itemName
+          return row.storeItemModel.itemName;
         },
       },
       quantity: {
-        title: 'Quantity',
-        type: 'number',
+        title: "Quantity",
+        type: "number",
       },
       requiredDays: {
-        title: 'Required Days',
-        type: 'number',
+        title: "Required Days",
+        type: "number",
       },
       issueDate: {
-        title: 'Issue Date',
-        type: 'date',
+        title: "Issue Date",
+        type: "date",
         valuePrepareFunction: (cell, row) => {
-          return new Date(cell).toLocaleString('en-IN');
+          return new Date(cell).toLocaleString("en-IN");
         },
       },
       status: {
-        title: 'Status',
-        type: 'html',
+        title: "Status",
+        type: "html",
         valuePrepareFunction: (cell, row) => {
-          return '<span class="cell_right1">' + cell + '</span>';
+          return '<span class="cell_right1">' + cell + "</span>";
         },
-      }
+      },
     },
   };
   REJECTsettings = {
     actions: false,
     columns: {
       issueId: {
-        title: 'ID',
-        type: 'number',
+        title: "ID",
+        type: "number",
       },
       description: {
-        title: 'Description',
-        type: 'string',
+        title: "Description",
+        type: "string",
       },
       storeItemModel: {
-        title: 'Item Name',
-        type: 'string',
+        title: "Item Name",
+        type: "string",
         valuePrepareFunction: (cell, row) => {
-          return row.storeItemModel.itemName
+          return row.storeItemModel.itemName;
         },
       },
       quantity: {
-        title: 'Quantity',
-        type: 'number',
+        title: "Quantity",
+        type: "number",
       },
       requiredDays: {
-        title: 'Required Days',
-        type: 'number',
+        title: "Required Days",
+        type: "number",
       },
       issueDate: {
-        title: 'Issue Date',
-        type: 'date',
+        title: "Issue Date",
+        type: "date",
         valuePrepareFunction: (cell, row) => {
-          return new Date(cell).toLocaleString('en-IN');
+          return new Date(cell).toLocaleString("en-IN");
         },
       },
       status: {
-        title: 'Status',
-        type: 'html',
+        title: "Status",
+        type: "html",
         valuePrepareFunction: (cell, row) => {
-          return '<span class="cell_right1">' + cell + '</span>';
+          return '<span class="cell_right1">' + cell + "</span>";
         },
-      }
+      },
     },
   };
   CANCELsettings = {
     actions: false,
     columns: {
       issueId: {
-        title: 'ID',
-        type: 'number',
+        title: "ID",
+        type: "number",
       },
       description: {
-        title: 'Description',
-        type: 'string',
+        title: "Description",
+        type: "string",
       },
       storeItemModel: {
-        title: 'Item Name',
-        type: 'string',
+        title: "Item Name",
+        type: "string",
         valuePrepareFunction: (cell, row) => {
-          return row.storeItemModel.itemName
+          return row.storeItemModel.itemName;
         },
       },
       quantity: {
-        title: 'Quantity',
-        type: 'number',
+        title: "Quantity",
+        type: "number",
       },
       requiredDays: {
-        title: 'Required Days',
-        type: 'number',
+        title: "Required Days",
+        type: "number",
       },
       issueDate: {
-        title: 'Issue Date',
-        type: 'date',
+        title: "Issue Date",
+        type: "date",
         valuePrepareFunction: (cell, row) => {
-          return new Date(cell).toLocaleString('en-IN');
+          return new Date(cell).toLocaleString("en-IN");
         },
       },
       status: {
-        title: 'Status',
-        type: 'html',
+        title: "Status",
+        type: "html",
         valuePrepareFunction: (cell, row) => {
-          return '<span class="cell_right1">' + cell + '</span>';
+          return '<span class="cell_right1">' + cell + "</span>";
         },
-      }
+      },
     },
   };
   OPENsettings = {
     actions: false,
     columns: {
       issueId: {
-        title: 'ID',
-        type: 'number',
+        title: "ID",
+        type: "number",
       },
       description: {
-        title: 'Description',
-        type: 'string',
+        title: "Description",
+        type: "string",
       },
       storeItemModel: {
-        title: 'Item Name',
-        type: 'string',
+        title: "Item Name",
+        type: "string",
         valuePrepareFunction: (cell, row) => {
-          return row.storeItemModel.itemName
+          return row.storeItemModel.itemName;
         },
       },
       quantity: {
-        title: 'Quantity',
-        type: 'number',
+        title: "Quantity",
+        type: "number",
       },
       requiredDays: {
-        title: 'Required Days',
-        type: 'number',
+        title: "Required Days",
+        type: "number",
       },
       issueDate: {
-        title: 'Issue Date',
-        type: 'date',
+        title: "Issue Date",
+        type: "date",
         valuePrepareFunction: (cell, row) => {
-          return new Date(cell).toLocaleString('en-IN');
+          return new Date(cell).toLocaleString("en-IN");
         },
       },
       status: {
-        title: 'Status',
-        type: 'html',
+        title: "Status",
+        type: "html",
         valuePrepareFunction: (cell, row) => {
-          return '<span class="cell_right1">' + cell + '</span>';
+          return '<span class="cell_right1">' + cell + "</span>";
         },
-      }
+      },
     },
   };
   OPENsettingsMain = {
@@ -311,53 +332,54 @@ export class IssueComponent implements OnInit {
       edit: false,
       custom: [
         {
-          name: 'Button',
-          type: 'html',
+          name: "Button",
+          type: "html",
           title: '<i class="nb-list" title="View"></i>',
-        }],
-      position: 'right'
+        },
+      ],
+      position: "right",
     },
     columns: {
       issueId: {
-        title: 'ID',
-        type: 'number',
+        title: "ID",
+        type: "number",
       },
       description: {
-        title: 'Description',
-        type: 'string',
+        title: "Description",
+        type: "string",
       },
       storeItemModel: {
-        title: 'Item Name',
-        type: 'string',
+        title: "Item Name",
+        type: "string",
         valuePrepareFunction: (cell, row) => {
-          return row.storeItemModel.itemName
+          return row.storeItemModel.itemName;
         },
       },
       quantity: {
-        title: 'Quantity',
-        type: 'number',
+        title: "Quantity",
+        type: "number",
       },
       requiredDays: {
-        title: 'Required Days',
-        type: 'number',
+        title: "Required Days",
+        type: "number",
       },
       issueDate: {
-        title: 'Issue Date',
-        type: 'date',
+        title: "Issue Date",
+        type: "date",
         valuePrepareFunction: (cell, row) => {
-          return new Date(cell).toLocaleString('en-IN');
+          return new Date(cell).toLocaleString("en-IN");
         },
       },
       status: {
-        title: 'Status',
-        type: 'html',
+        title: "Status",
+        type: "html",
         valuePrepareFunction: (cell, row) => {
-          return '<span class="cell_right1">' + cell + '</span>';
+          return '<span class="cell_right1">' + cell + "</span>";
         },
-      }
+      },
     },
   };
-  
+
   constructor(
     private dialogService: NbDialogService,
     private fb: FormBuilder,
@@ -365,24 +387,24 @@ export class IssueComponent implements OnInit {
     private post: IssueService,
     private postIndent: IndentService,
     private postItem: ItemService,
-    private postResponce: ResponceService
-  ) { }
+    private postResponce: ResponceService,
+    private machineName: MachineService
+  ) {}
 
   ngOnInit(): void {
-    let role = this._auth.user.roles.find((x => x));
+    let role = this._auth.user.roles.find((x) => x);
     let role_id = this._auth.user.userId;
-    if (role == 'ROLE_ADMIN') {
+    if (role == "ROLE_ADMIN") {
       this.admin = true;
-    } else if (role == 'ROLE_MAINTENANCE') {
+    } else if (role == "ROLE_MAINTENANCE") {
       this.maintanance = true;
-    } else if (role == 'ROLE_STORE') {
+    } else if (role == "ROLE_STORE") {
       this.store = true;
-    } else if (role == 'ROLE_GENERALMANAGER') {
+    } else if (role == "ROLE_GENERALMANAGER") {
       this.gm = true;
     }
 
-    this.postResponce.ViewResponce().subscribe((data: any) => {
-    })
+    this.postResponce.ViewResponce().subscribe((data: any) => {});
 
     this.IssueForm = this.fb.group({
       quantity: [null],
@@ -394,17 +416,19 @@ export class IssueComponent implements OnInit {
       }),
       emp: this.fb.group({
         id: [role_id],
-      })
-    })
+      }),
+      deptName: [null],
+      machineName: [null],
+    });
     this.IssueOpenForm = this.fb.group({
       quantity: [null],
       coments: [null, Validators.required],
       remarks: [null],
-      issueId: [null]
-    })
+      issueId: [null],
+    });
 
     this.ResponceForm = this.fb.group({
-      resStatus: ['ISSUE'],
+      resStatus: ["ISSUE"],
       pdiId: [null],
       issueStatus: [null],
       coments: [null, Validators.required],
@@ -413,26 +437,26 @@ export class IssueComponent implements OnInit {
       poRaised: [false],
       doRaised: [false],
       employe: this.fb.group({
-        id: [role_id]
-      })
-    })
+        id: [role_id],
+      }),
+    });
 
     this.IndentForm = this.fb.group({
       storeItem: this.fb.group({
-        itemId: [null]
+        itemId: [null],
       }),
       employee: this.fb.group({
-        id: [role_id]
+        id: [role_id],
       }),
       issue: this.fb.group({
-        issueId: [null]
+        issueId: [null],
       }),
       quantity: [null],
-      estimatedPrice: [null]
-    })
+      estimatedPrice: [null],
+    });
 
     this.ResponceFormIndent = this.fb.group({
-      resStatus: ['INDENT'],
+      resStatus: ["INDENT"],
       pdiId: [null],
       issueStatus: [null],
       coments: [null, Validators.required],
@@ -441,174 +465,385 @@ export class IssueComponent implements OnInit {
       poRaised: [false],
       doRaised: [false],
       employe: this.fb.group({
-        id: [role_id]
-      })
-    })
+        id: [role_id],
+      }),
+    });
 
-    this.postItem.ViewItem().subscribe(data => {
+    this.usageItemForm = this.fb.group({
+      deptName: [null],
+      issuedItem: this.fb.group({
+        issueId: [null],
+      }),
+    });
+
+    this.postItem.ViewItem().subscribe((data) => {
       this.item = data.Data;
     });
-    this.post.ViewIssue().subscribe((data => {
+    this.post.ViewIssue().subscribe((data) => {
       this.IssueSource = data.Data;
-    }))
+    });
 
-    this.post.ViewIssueStatus('PENDING').subscribe((data => {
+    this.post.ViewIssueStatus("PENDING").subscribe((data) => {
       this.PENDINGIssueSource = data.Data;
-    }));
-    this.post.ViewIssueStatus('ACCEPT').subscribe((data => {
+    });
+    this.post.ViewIssueStatus("ACCEPT").subscribe((data) => {
       this.ACCEPTIssueSource = data.Data;
-    }));
-    this.post.ViewIssueStatus('DONE').subscribe((data => {
+    });
+    this.post.ViewIssueStatus("DONE").subscribe((data) => {
       this.DONEIssueSource = data.Data;
-    }));
-    this.post.ViewIssueStatus('REJECT').subscribe((data => {
+    });
+    this.post.ViewIssueStatus("REJECT").subscribe((data) => {
       this.REJECTIssueSource = data.Data;
-    }));
-    this.post.ViewIssueStatus('CANCEL').subscribe((data => {
+    });
+    this.post.ViewIssueStatus("CANCEL").subscribe((data) => {
       this.CANCELIssueSource = data.Data;
-    }));
-    this.post.ViewIssueStatus('OPEN').subscribe((data => {
+    });
+    this.post.ViewIssueStatus("OPEN").subscribe((data) => {
       this.OPENIssueSource = data.Data;
-    }));
+    });
+  }
+
+  chengeDepartmentName(event) {
+    this.IssueForm.get("machineName").setValue(null);
+    if (event == "bloowroom") {
+      this.machineName.ViewAllBloowRoom().subscribe((data: any) => {
+        this.MachineName = data;
+      });
+    } else if (event == "carding") {
+      this.machineName.ViewAllCarding().subscribe((data: any) => {
+        this.MachineName = data;
+      });
+    } else if (event == "drawframe") {
+      this.machineName.ViewAllDrawframes().subscribe((data: any) => {
+        this.MachineName = data;
+      });
+    } else if (event == "finisher") {
+      this.machineName.ViewAllFinisher().subscribe((data: any) => {
+        this.MachineName = data;
+      });
+    } else if (event == "speedframe") {
+      this.machineName.ViewAllSimplex().subscribe((data: any) => {
+        this.MachineName = data;
+      });
+    } else if (event == "comber") {
+      this.machineName.ViewAllCombers().subscribe((data: any) => {
+        this.MachineName = data;
+      });
+    } else if (event == "lapformer") {
+      this.machineName.ViewAllLapformer().subscribe((data: any) => {
+        this.MachineName = data;
+      });
+    } else if (event == "ringframe") {
+      this.machineName.ViewAllRingframe().subscribe((data: any) => {
+        this.MachineName = data;
+      });
+    } else if (event == "winding") {
+      this.machineName.ViewAllWinding().subscribe((data: any) => {
+        this.MachineName = data;
+      });
+    } else if (event == "packing") {
+      this.machineName.ViewAllPacking().subscribe((data: any) => {
+        this.MachineName = data;
+      });
+    } else if (event == "utility") {
+      this.machineName.ViewAllUtility().subscribe((data: any) => {
+        this.MachineName = data;
+      });
+    } else if (event == "wasteroom") {
+      this.machineName.ViewAllWasteroom().subscribe((data: any) => {
+        this.MachineName = data;
+      });
+    }
   }
 
   createIssue(dialog: TemplateRef<any>) {
-    this.NbDialogRef = this.dialogService.open(
-      dialog,
-      {
-        closeOnBackdropClick: false,
-      });
+    this.NbDialogRef = this.dialogService.open(dialog, {
+      closeOnBackdropClick: false,
+    });
   }
   onIssueFormSubmit() {
+    let deptName = this.IssueForm.value.deptName;
+    this.usageItemForm.get("deptName").setValue(deptName);
+    console.warn(this.IssueForm.value.machineName);
+
+    if (deptName == "bloowroom") {
+      this.usageItemForm.addControl(
+        "bloowusage",
+        this.fb.group({
+          id: [this.IssueForm.value.machineName],
+        })
+      );
+    } else if (deptName == "carding") {
+      this.usageItemForm.addControl(
+        "cardingusage",
+        this.fb.group({
+          id: [this.IssueForm.value.machineName],
+        })
+      );
+    } else if (deptName == "comber") {
+      this.usageItemForm.addControl(
+        "comberusage",
+        this.fb.group({
+          id: [this.IssueForm.value.machineName],
+        })
+      );
+    } else if (deptName == "lapformer") {
+      this.usageItemForm.addControl(
+        "lapFormerusage",
+        this.fb.group({
+          id: [this.IssueForm.value.machineName],
+        })
+      );
+    } else if (deptName == "drawframe") {
+      this.usageItemForm.addControl(
+        "drawFramesMachine",
+        this.fb.group({
+          id: [this.IssueForm.value.machineName],
+        })
+      );
+    } else if (deptName == "finisher") {
+      this.usageItemForm.addControl(
+        "finisherMachinedata",
+        this.fb.group({
+          id: [this.IssueForm.value.machineName],
+        })
+      );
+    } else if (deptName == "packing") {
+      this.usageItemForm.addControl(
+        "packingMachineusage",
+        this.fb.group({
+          id: [this.IssueForm.value.machineName],
+        })
+      );
+    } else if (deptName == "ringframe") {
+      this.usageItemForm.addControl(
+        "ringframeMachineusage",
+        this.fb.group({
+          id: [this.IssueForm.value.machineName],
+        })
+      );
+    } else if (deptName == "speedframe") {
+      this.usageItemForm.addControl(
+        "simplexMachineusage",
+        this.fb.group({
+          id: [this.IssueForm.value.machineName],
+        })
+      );
+    } else if (deptName == "utility") {
+      this.usageItemForm.addControl(
+        "utilliyMachineusage",
+        this.fb.group({
+          id: [this.IssueForm.value.machineName],
+        })
+      );
+    } else if (deptName == "wasteroom") {
+      this.usageItemForm.addControl(
+        "wasteMachineusage",
+        this.fb.group({
+          id: [this.IssueForm.value.machineName],
+        })
+      );
+    } else if (deptName == "winding") {
+      this.usageItemForm.addControl(
+        "windingMachineusage",
+        this.fb.group({
+          id: [this.IssueForm.value.machineName],
+        })
+      );
+    }
+
     this.post.CreateIssue(this.IssueForm.value).subscribe((data: any) => {
-      this.IssueForm.reset();
-      this.NbDialogRef.close();
-      this.ngOnInit();
-    })
+      // console.warn(data.Data.issueId);
+      this.usageItemForm
+        .get("issuedItem")
+        .get("issueId")
+        .setValue(data.Data.issueId);
+
+      this.post
+        .CreateUsageItem(this.usageItemForm.value)
+        .subscribe((data: any) => {
+          this.IssueForm.reset();
+          this.NbDialogRef.close();
+          this.ngOnInit();
+        });
+    });
   }
 
   onChangeIssueStatus(event, dialog1) {
     this.statusChangeIssue = null;
     this.statusChangeIssue = event;
-    this.IssueOpenForm.get('quantity').setValue(event.quantity);
-    this.IssueOpenForm.get('issueId').setValue(event.issueId);
-    this.NbDialogRef1 = this.dialogService.open(
-      dialog1,
-      {
-        closeOnBackdropClick: false,
-      });
+    this.IssueOpenForm.get("quantity").setValue(event.quantity);
+    this.IssueOpenForm.get("issueId").setValue(event.issueId);
+    this.NbDialogRef1 = this.dialogService.open(dialog1, {
+      closeOnBackdropClick: false,
+    });
   }
 
   onChangeIssueCloseStatus(event, dialog2) {
     this.statusChangeIssue = null;
     this.statusChangeIssue = event;
-    this.IssueOpenForm.get('quantity').setValue(event.quantity);
-    this.IssueOpenForm.get('issueId').setValue(event.issueId);
-    this.NbDialogRef2 = this.dialogService.open(
-      dialog2,
-      {
-        closeOnBackdropClick: false,
-      });
+    this.IssueOpenForm.get("quantity").setValue(event.quantity);
+    this.IssueOpenForm.get("issueId").setValue(event.issueId);
+    this.NbDialogRef2 = this.dialogService.open(dialog2, {
+      closeOnBackdropClick: false,
+    });
   }
 
   issueOpen() {
     let Opendata = {
-      'quantity': this.IssueOpenForm.value.quantity,
-      'status': 'OPEN'
-    }
-    this.post.StatusUpdateIssue(this.IssueOpenForm.value.issueId, Opendata).subscribe((data: any) => {
-
-      this.ResponceForm.get('coments').setValue(this.IssueOpenForm.value.coments);
-      this.ResponceForm.get('remarks').setValue(this.IssueOpenForm.value.remarks);
-      this.ResponceForm.get('issueStatus').setValue("PENDING");
-      this.ResponceForm.get('pdiId').setValue(this.IssueOpenForm.value.issueId);
-      this.postResponce.CreateResponce(this.ResponceForm.value).subscribe((data: any) => {
-        this.NbDialogRef1.close();
-        this.ngOnInit();
-
-      })
-    })
+      quantity: this.IssueOpenForm.value.quantity,
+      status: "OPEN",
+    };
+    this.post
+      .StatusUpdateIssue(this.IssueOpenForm.value.issueId, Opendata)
+      .subscribe((data: any) => {
+        this.ResponceForm.get("coments").setValue(
+          this.IssueOpenForm.value.coments
+        );
+        this.ResponceForm.get("remarks").setValue(
+          this.IssueOpenForm.value.remarks
+        );
+        this.ResponceForm.get("issueStatus").setValue("PENDING");
+        this.ResponceForm.get("pdiId").setValue(
+          this.IssueOpenForm.value.issueId
+        );
+        this.postResponce
+          .CreateResponce(this.ResponceForm.value)
+          .subscribe((data: any) => {
+            this.NbDialogRef1.close();
+            this.ngOnInit();
+          });
+      });
   }
 
   issueReject() {
     let Opendata = {
-      'quantity': this.IssueOpenForm.value.quantity,
-      'status': 'REJECT'
-    }
-    this.post.StatusUpdateIssue(this.IssueOpenForm.value.issueId, Opendata).subscribe((data: any) => {
-      this.ResponceForm.get('coments').setValue(this.IssueOpenForm.value.coments);
-      this.ResponceForm.get('remarks').setValue(this.IssueOpenForm.value.remarks);
-      this.ResponceForm.get('issueStatus').setValue("PENDING");
-      this.ResponceForm.get('pdiId').setValue(this.IssueOpenForm.value.issueId);
-      this.postResponce.CreateResponce(this.ResponceForm.value).subscribe((data: any) => {
-        this.NbDialogRef1.close();
-        this.ngOnInit();
-      })
-    })
+      quantity: this.IssueOpenForm.value.quantity,
+      status: "REJECT",
+    };
+    this.post
+      .StatusUpdateIssue(this.IssueOpenForm.value.issueId, Opendata)
+      .subscribe((data: any) => {
+        this.ResponceForm.get("coments").setValue(
+          this.IssueOpenForm.value.coments
+        );
+        this.ResponceForm.get("remarks").setValue(
+          this.IssueOpenForm.value.remarks
+        );
+        this.ResponceForm.get("issueStatus").setValue("PENDING");
+        this.ResponceForm.get("pdiId").setValue(
+          this.IssueOpenForm.value.issueId
+        );
+        this.postResponce
+          .CreateResponce(this.ResponceForm.value)
+          .subscribe((data: any) => {
+            this.NbDialogRef1.close();
+            this.ngOnInit();
+          });
+      });
   }
 
   issueCancel() {
     let Opendata = {
-      'quantity': this.IssueOpenForm.value.quantity,
-      'status': 'CANCEL'
-    }
-    this.post.StatusUpdateIssue(this.IssueOpenForm.value.issueId, Opendata).subscribe((data: any) => {
-      this.ResponceForm.get('coments').setValue(this.IssueOpenForm.value.coments);
-      this.ResponceForm.get('remarks').setValue(this.IssueOpenForm.value.remarks);
-      this.ResponceForm.get('issueStatus').setValue("PENDING");
-      this.ResponceForm.get('pdiId').setValue(this.IssueOpenForm.value.issueId);
-      this.postResponce.CreateResponce(this.ResponceForm.value).subscribe((data: any) => {
-        this.NbDialogRef1.close();
-        this.ngOnInit();
-
-      })
-    })
+      quantity: this.IssueOpenForm.value.quantity,
+      status: "CANCEL",
+    };
+    this.post
+      .StatusUpdateIssue(this.IssueOpenForm.value.issueId, Opendata)
+      .subscribe((data: any) => {
+        this.ResponceForm.get("coments").setValue(
+          this.IssueOpenForm.value.coments
+        );
+        this.ResponceForm.get("remarks").setValue(
+          this.IssueOpenForm.value.remarks
+        );
+        this.ResponceForm.get("issueStatus").setValue("PENDING");
+        this.ResponceForm.get("pdiId").setValue(
+          this.IssueOpenForm.value.issueId
+        );
+        this.postResponce
+          .CreateResponce(this.ResponceForm.value)
+          .subscribe((data: any) => {
+            this.NbDialogRef1.close();
+            this.ngOnInit();
+          });
+      });
   }
 
   issueClose() {
     let Opendata = {
-      'quantity': this.IssueOpenForm.value.quantity,
-      'status': 'DONE'
-    }
-    this.post.StatusUpdateIssue(this.IssueOpenForm.value.issueId, Opendata).subscribe((data: any) => {
-      this.ResponceForm.get('coments').setValue(this.IssueOpenForm.value.coments);
-      this.ResponceForm.get('remarks').setValue(this.IssueOpenForm.value.remarks);
-      this.ResponceForm.get('issueStatus').setValue("OPEN");
-      this.ResponceForm.get('pdiId').setValue(this.IssueOpenForm.value.issueId);
-      this.postResponce.CreateResponce(this.ResponceForm.value).subscribe((data: any) => {
-        this.NbDialogRef2.close();
-        this.ngOnInit();
-
-      })
-    })
-  }
-
-  
-  IndentCreate(dialog3: TemplateRef<any>) {
-    console.warn(this.statusChangeIssue);
-    this.IndentForm.get('storeItem').get('itemId').setValue(this.statusChangeIssue.storeItemModel.itemId);
-    this.IndentForm.get('issue').get('issueId').setValue(this.statusChangeIssue.issueId);
-    this.IndentForm.get('quantity').setValue(this.statusChangeIssue.quantity);
-    console.warn(this.IndentForm.value);
-    this.NbDialogRef1.close();
-    this.NbDialogRef3 = this.dialogService.open(
-      dialog3,
-      {
-        closeOnBackdropClick: false,
+      quantity: this.IssueOpenForm.value.quantity,
+      status: "DONE",
+    };
+    this.post
+      .StatusUpdateIssue(this.IssueOpenForm.value.issueId, Opendata)
+      .subscribe((data: any) => {
+        this.ResponceForm.get("coments").setValue(
+          this.IssueOpenForm.value.coments
+        );
+        this.ResponceForm.get("remarks").setValue(
+          this.IssueOpenForm.value.remarks
+        );
+        this.ResponceForm.get("issueStatus").setValue("OPEN");
+        this.ResponceForm.get("pdiId").setValue(
+          this.IssueOpenForm.value.issueId
+        );
+        this.postResponce
+          .CreateResponce(this.ResponceForm.value)
+          .subscribe((data: any) => {
+            this.NbDialogRef2.close();
+            this.ngOnInit();
+          });
       });
   }
 
-  onIndentFormSubmit() {
-    this.postIndent.CreateIndent(this.IndentForm.value).subscribe((data: any) => {
-      
-      this.ResponceFormIndent.get('coments').setValue("create indent");
-      this.ResponceFormIndent.get('remarks').setValue("create indent");
-      this.ResponceFormIndent.get('pdiId').setValue(data.Data.indentId);
-      this.postResponce.CreateResponce(this.ResponceFormIndent.value).subscribe((data: any) => {
-        this.NbDialogRef3.close();
-        this.ngOnInit();
-      })
-    })
+  IndentCreate(dialog3: TemplateRef<any>) {
+    console.warn(this.statusChangeIssue);
+    // this.total = null;
+    this.tax = this.statusChangeIssue.storeItemModel.paytax;
+    this.IndentForm.get("storeItem")
+      .get("itemId")
+      .setValue(this.statusChangeIssue.storeItemModel.itemId);
+    this.IndentForm.get("issue")
+      .get("issueId")
+      .setValue(this.statusChangeIssue.issueId);
+    this.IndentForm.get("quantity").setValue(this.statusChangeIssue.quantity);
+    console.warn(this.IndentForm.value);
+    this.NbDialogRef1.close();
+    this.NbDialogRef3 = this.dialogService.open(dialog3, {
+      closeOnBackdropClick: false,
+    });
   }
 
+  taxToatal(event) {
+    console.warn(this.IndentForm.value.quantity);
+    let price = event.target.value;
+    let quantity = this.IndentForm.value.quantity;
+    if (this.tax != null && price != null && quantity != null) {
+      this.total = (quantity * price * this.tax) / 100 + quantity * price;
+    }
+  }
+  taxToatalQantity(event) {
+    let price = this.IndentForm.value.estimatedPrice;
+    let quantity = event.target.value;
+    if (this.tax != null && price != null && quantity != null) {
+      this.total = (quantity * price * this.tax) / 100 + quantity * price;
+    }
+  }
+
+  onIndentFormSubmit() {
+    this.postIndent
+      .CreateIndent(this.IndentForm.value)
+      .subscribe((data: any) => {
+        this.ResponceFormIndent.get("coments").setValue("create indent");
+        this.ResponceFormIndent.get("remarks").setValue("create indent");
+        this.ResponceFormIndent.get("pdiId").setValue(data.Data.indentId);
+        this.postResponce
+          .CreateResponce(this.ResponceFormIndent.value)
+          .subscribe((data: any) => {
+            this.NbDialogRef3.close();
+            this.ngOnInit();
+          });
+      });
+  }
 }

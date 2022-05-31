@@ -1,18 +1,16 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NbDialogService } from '@nebular/theme';
-import { LoginService } from '../../../@service/auth/login.service';
-import { CategoryService } from '../../../@service/store/category.service';
-import { UserService } from '../../../@service/user/user.service';
+import { Component, OnInit, TemplateRef } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { NbDialogService } from "@nebular/theme";
+import { LoginService } from "../../../@service/auth/login.service";
+import { CategoryService } from "../../../@service/store/category.service";
+import { UserService } from "../../../@service/user/user.service";
 
 @Component({
-  selector: 'ngx-product-category',
-  templateUrl: './product-category.component.html',
-  styleUrls: ['./product-category.component.scss']
+  selector: "ngx-product-category",
+  templateUrl: "./product-category.component.html",
+  styleUrls: ["./product-category.component.scss"],
 })
 export class ProductCategoryComponent implements OnInit {
-
-
   source: any = [];
   admin: boolean = false;
   maintanance: boolean = false;
@@ -35,14 +33,14 @@ export class ProductCategoryComponent implements OnInit {
 
     columns: {
       pid: {
-        title: 'ID',
-        type: 'number',
+        title: "ID",
+        type: "number",
       },
       productName: {
-        title: 'Product Category',
-        type: 'string',
+        title: "Product Category",
+        type: "string",
       },
-    
+
       // address: {
       //   title: 'Status',
       //   type: 'html',
@@ -52,13 +50,11 @@ export class ProductCategoryComponent implements OnInit {
       //     } if (cell == 'ahmedabad') {
       //       return '<span class="cell_right1">' + cell + '</span>';
       //     }
-         
+
       //   }
       // }
     },
   };
-
-
 
   CategoryForm: FormGroup;
   NbDialogRef = null;
@@ -67,52 +63,44 @@ export class ProductCategoryComponent implements OnInit {
     private dialogService: NbDialogService,
     private fb: FormBuilder,
     private post: CategoryService,
-    private _auth: LoginService,
-  ) { }
+    private _auth: LoginService
+  ) {}
 
   ngOnInit(): void {
-
-    let role = this._auth.user.roles.find((x => x));
-    if (role == 'ROLE_ADMIN') {
+    let role = this._auth.user.roles.find((x) => x);
+    if (role == "ROLE_ADMIN") {
       this.admin = true;
-    } else if (role == 'ROLE_MAINTENANCE') {
+    } else if (role == "ROLE_MAINTENANCE") {
       this.maintanance = true;
-    } else if (role == 'ROLE_STORE') {
+    } else if (role == "ROLE_STORE") {
       this.store = true;
-    } else if (role == 'ROLE_GENERALMANAGER') {
+    } else if (role == "ROLE_GENERALMANAGER") {
       this.gm = true;
     }
 
     this.CategoryForm = this.fb.group({
-      productName: ['', Validators.required],
-    })
-
-    this.post.ViewCategory().subscribe(data => {
-      this.source = data.Data;
-        console.warn(data);
+      productName: ["", Validators.required],
     });
 
-
+    this.post.ViewCategory().subscribe((data) => {
+      this.source = data.Data;
+      console.warn(data);
+    });
   }
 
   addCategory(dialog: TemplateRef<any>) {
     this.CategoryForm.reset();
-    this.NbDialogRef = this.dialogService.open(
-      dialog,
-      {
-        closeOnBackdropClick: false,
-      });
+    this.NbDialogRef = this.dialogService.open(dialog, {
+      closeOnBackdropClick: false,
+    });
   }
 
   onCategoryFormSubmit() {
-    
     this.post.CreateCategory(this.CategoryForm.value).subscribe((data: any) => {
       this.CategoryForm.reset();
-      alert('category Done');
+      alert("category Done");
       this.NbDialogRef.close();
       this.ngOnInit();
     });
-    
   }
-
 }

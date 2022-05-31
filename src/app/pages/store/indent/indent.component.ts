@@ -28,6 +28,9 @@ export class IndentComponent implements OnInit {
   ResponceForm: FormGroup;
   item: any;
 
+  tax: any;
+  total: any;
+
   ResponceSource: any = [];
   IndentSource: any = [];
   VPIndentSource: any = [];
@@ -56,6 +59,17 @@ export class IndentComponent implements OnInit {
       },
       estimatedPrice: {
         title: 'Estimated Price',
+        type: 'number',
+      },
+      paytax: {
+        title: 'Tax %',
+        type: 'number',
+        valuePrepareFunction: (cell, row) => {
+          return row.storeItem.paytax
+        },
+      },
+      total: {
+        title: 'Total Price',
         type: 'number',
       },
       created: {
@@ -94,6 +108,17 @@ export class IndentComponent implements OnInit {
       },
       estimatedPrice: {
         title: 'Estimated Price',
+        type: 'number',
+      },
+      paytax: {
+        title: 'Tax %',
+        type: 'number',
+        valuePrepareFunction: (cell, row) => {
+          return row.storeItem.paytax
+        },
+      },
+      total: {
+        title: 'Total Price',
         type: 'number',
       },
       created: {
@@ -145,6 +170,17 @@ export class IndentComponent implements OnInit {
         title: 'Estimated Price',
         type: 'number',
       },
+      paytax: {
+        title: 'Tax %',
+        type: 'number',
+        valuePrepareFunction: (cell, row) => {
+          return row.storeItem.paytax
+        },
+      },
+      total: {
+        title: 'Total Price',
+        type: 'number',
+      },
       created: {
         title: 'Indent Date',
         type: 'date',
@@ -194,6 +230,17 @@ export class IndentComponent implements OnInit {
         title: 'Estimated Price',
         type: 'number',
       },
+      paytax: {
+        title: 'Tax %',
+        type: 'number',
+        valuePrepareFunction: (cell, row) => {
+          return row.storeItem.paytax
+        },
+      },
+      total: {
+        title: 'Total Price',
+        type: 'number',
+      },
       created: {
         title: 'Indent Date',
         type: 'date',
@@ -230,6 +277,17 @@ export class IndentComponent implements OnInit {
       },
       estimatedPrice: {
         title: 'Estimated Price',
+        type: 'number',
+      },
+      paytax: {
+        title: 'Tax %',
+        type: 'number',
+        valuePrepareFunction: (cell, row) => {
+          return row.storeItem.paytax
+        },
+      },
+      total: {
+        title: 'Total Price',
         type: 'number',
       },
       created: {
@@ -281,6 +339,17 @@ export class IndentComponent implements OnInit {
         title: 'Estimated Price',
         type: 'number',
       },
+      paytax: {
+        title: 'Tax %',
+        type: 'number',
+        valuePrepareFunction: (cell, row) => {
+          return row.storeItem.paytax
+        },
+      },
+      total: {
+        title: 'Total Price',
+        type: 'number',
+      },
       created: {
         title: 'Indent Date',
         type: 'date',
@@ -319,6 +388,17 @@ export class IndentComponent implements OnInit {
         title: 'Estimated Price',
         type: 'number',
       },
+      paytax: {
+        title: 'Tax %',
+        type: 'number',
+        valuePrepareFunction: (cell, row) => {
+          return row.storeItem.paytax
+        },
+      },
+      total: {
+        title: 'Total Price',
+        type: 'number',
+      },
       created: {
         title: 'Indent Date',
         type: 'date',
@@ -355,6 +435,17 @@ export class IndentComponent implements OnInit {
       },
       estimatedPrice: {
         title: 'estimated Price',
+        type: 'number',
+      },
+      paytax: {
+        title: 'Tax %',
+        type: 'number',
+        valuePrepareFunction: (cell, row) => {
+          return row.storeItem.paytax
+        },
+      },
+      total: {
+        title: 'Total Price',
         type: 'number',
       },
       created: {
@@ -404,6 +495,17 @@ export class IndentComponent implements OnInit {
       },
       estimatedPrice: {
         title: 'Estimated Price',
+        type: 'number',
+      },
+      paytax: {
+        title: 'Tax %',
+        type: 'number',
+        valuePrepareFunction: (cell, row) => {
+          return row.storeItem.paytax
+        },
+      },
+      total: {
+        title: 'Total Price',
         type: 'number',
       },
       created: {
@@ -550,6 +652,33 @@ export class IndentComponent implements OnInit {
       {
         closeOnBackdropClick: false,
       });
+  }
+
+  ItemPriceTotal(event) {
+    console.warn(event);
+    this.IndentForm.get('estimatedPrice').setValue(null);
+    this.IndentForm.get('quantity').setValue(null);
+    this.tax = null;
+    this.total = null;
+    this.postItem.FindByIdItem(event).subscribe((data: any) => {
+      this.tax = data.Data.paytax;
+    })
+  }
+
+  taxToatal(event) {
+    console.warn(this.IndentForm.value.quantity);
+    let price = event.target.value;
+    let quantity = this.IndentForm.value.quantity;
+    if(this.tax != null && price != null && quantity != null) {
+      this.total = (quantity * price * this.tax / 100) + quantity * price;
+    }
+  }
+  taxToatalQantity(event) {
+    let price = this.IndentForm.value.estimatedPrice;
+    let quantity = event.target.value;
+    if(this.tax != null && price != null && quantity != null) {
+      this.total = (quantity * price * this.tax / 100) + quantity * price;
+    }
   }
 
   onIndentFormSubmit() {

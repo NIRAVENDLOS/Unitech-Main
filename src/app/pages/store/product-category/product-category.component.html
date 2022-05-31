@@ -1,6 +1,7 @@
-
 <div *ngIf="admin || store">
-  <button nbButton status="danger" (click)="addCategory(dialog)">Add Product Category</button>
+  <button nbButton status="danger" (click)="addCategory(dialog)">
+    Add Product Category
+  </button>
 
   <nb-card>
     <nb-card-body>
@@ -10,7 +11,6 @@
   </nb-card>
 </div>
 
-
 <ng-template #dialog let-ref="dialogRef">
   <form [formGroup]="CategoryForm" (ngSubmit)="onCategoryFormSubmit(dialog)">
     <nb-card>
@@ -18,16 +18,36 @@
       <nb-card-body>
         <div class="form-group">
           <label for="name" class="label">Name</label>
-          <input type="text" nbInput fullWidth id="name" placeholder="Name" formControlName="productName"
-            [status]="CategoryForm.get('productName').touched ? (CategoryForm.get('productName').invalid  ? 'danger' : 'success') : 'basic'">
+          <input
+            type="text"
+            nbInput
+            fullWidth
+            id="name"
+            placeholder="Name"
+            formControlName="productName"
+            [status]="
+              CategoryForm.get('productName').touched
+                ? CategoryForm.get('productName').invalid
+                  ? 'danger'
+                  : 'success'
+                : 'basic'
+            "
+          />
         </div>
       </nb-card-body>
       <nb-card-footer>
-        <button class="cancel" nbButton status="danger" (click)="ref.close()">Cancel</button>
-        <button nbButton status="success" type="submit" [disabled]="CategoryForm.get('productName').invalid">Submit</button>
+        <button class="cancel" nbButton status="danger" (click)="ref.close()">
+          Cancel
+        </button>
+        <button
+          nbButton
+          status="success"
+          type="submit"
+          [disabled]="CategoryForm.get('productName').invalid"
+        >
+          Submit
+        </button>
       </nb-card-footer>
     </nb-card>
   </form>
 </ng-template>
-
-

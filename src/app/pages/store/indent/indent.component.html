@@ -61,7 +61,7 @@
             <nb-card-body>
                 <div class="form-group" formGroupName="storeItem">
                     <label for="Select_Item" class="label">Select Item</label>
-                    <nb-select placeholder="Select Product Item" fullWidth formControlName="itemId">
+                    <nb-select placeholder="Select Product Item" fullWidth formControlName="itemId" (ngModelChange)="ItemPriceTotal($event)">
                         <nb-option *ngFor="let item of item" value="{{item.itemId}}">{{item.itemName}}
                         </nb-option>
                     </nb-select>
@@ -69,15 +69,22 @@
 
                 <div class="form-group">
                     <label for="quantity" class="label">Quantity</label>
-                    <input type="tel" nbInput fullWidth id="quantity" placeholder="quantity" formControlName="quantity">
+                    <input type="tel" nbInput fullWidth id="quantity" placeholder="quantity" formControlName="quantity" (keyup)="taxToatalQantity($event)">
                 </div>
 
                 <div class="form-group">
                     <label for="estimatedPrice" class="label">Estimated Price</label>
-                    <input type="tel" nbInput fullWidth id="estimatedPrice" placeholder="estimated Price"
+                    <input type="tel" nbInput fullWidth id="estimatedPrice" placeholder="estimated Price" (keyup)="taxToatal($event)"
                         formControlName="estimatedPrice">
                 </div>
-
+                <div class="form-group">
+                    <label for="tex" class="label">Tax %</label>
+                    <input type="tel" nbInput readonly fullWidth id="tex" placeholder="Tax Price" value="{{tax}}">
+                </div>
+                <div class="form-group">
+                    <label for="total" class="label">Total</label>
+                    <input type="tel" nbInput readonly fullWidth id="total" placeholder="Total Price" value="{{total}}">
+                </div>
 
             </nb-card-body>
             <nb-card-footer>

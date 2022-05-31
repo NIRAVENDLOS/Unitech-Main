@@ -1,0 +1,32 @@
+<nb-card>
+  <nb-card-body>
+    <nb-tabset fullWidth>
+      <nb-tab tabTitle="Department Report">
+        <div class="row">
+          <div class="col-md-6">
+            <form [formGroup]="IndentForm">
+              <div class="form-group">
+                <label for="Select_Item" class="label">Select Item</label>
+                <nb-select
+                  placeholder="Select Product Item"
+                  fullWidth
+                  formControlName="departmentName"
+                  (ngModelChange)="chengeDepartmentName($event)"
+                >
+                  <nb-option *ngFor="let item of deptName" value="{{ item }}"
+                    >{{ item }}
+                  </nb-option>
+                </nb-select>
+              </div>
+            </form>
+          </div>
+        </div>
+        <ng2-smart-table
+        [settings]="settings"
+        [source]="Source"
+      >
+      </ng2-smart-table>
+      </nb-tab>
+    </nb-tabset>
+  </nb-card-body>
+</nb-card>
