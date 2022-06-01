@@ -36,7 +36,7 @@ export const STORE_MENU_ITEMS: NbMenuItem[] = [
         link: '/pages/store/indent',
       },
       {
-        title: 'Report',
+        title: 'Issue Report',
         link: '/pages/store/report',
       },
     ],

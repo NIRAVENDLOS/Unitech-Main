@@ -546,7 +546,7 @@ export class IndentComponent implements OnInit {
         title: 'Remarks',
         type: 'string',
       },
-      create: {
+      created: {
         title: 'Indent Responce Date',
         type: 'date',
         valuePrepareFunction: (cell, row) => {
